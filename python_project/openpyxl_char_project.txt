@@ -1,0 +1,27 @@
+import openpyxl
+
+from openpyxl.styles import Font  # 设置字体
+from openpyxl.styles import PatternFill  # 设置填充
+Color = ['ffffff', '000000']  # 黑白
+
+fille = PatternFill('solid', fgColor=Color[0])  # 设置填充颜色为 橙色
+font = Font(u'微软雅黑', size=11, bold=True, italic=False, strike=False, color=Color[1])  # 设置字体样式
+sheet1.cell(row=i + 2, column=8, value="").fill = fille  # 序列
+sheet1.cell(row=i + 2, column=8, value="哈哈").font =font # 序列
+
+from openpyxl.styles import Border,Side #设置边框
+border = Border(left=Side(border_style=‘thin’,color=‘000000’),
+right=Side(border_style=‘thin’,color=‘000000’),
+top=Side(border_style=‘thin’,color=‘000000’),
+bottom=Side(border_style=‘thin’,color=‘000000’))
+ws.[‘C1’].border = border
+注意这里需要导入Border和Side两个函数
+边框的样式有很多，官方给出的样式如下：
+‘dashDot’,‘dashDotDot’,‘dashed’,‘dotted’,‘double’,‘hair’,‘medium’,‘mediumDashDot’,‘mediumDashDotDot’,‘mediumDashed’,‘slantDashDot’,‘thick’,‘thin’
+
+from openpyxl.styles import Alignment #设置对齐方式
+align = Alignment(horizontal=‘left’,vertical=‘center’,wrap_text=True)
+ws.[‘D1’].alignment = align
+horizontal代表水平方向，可以左对齐left，还有居中center和右对齐right，分散对齐distributed，跨列居中centerContinuous，两端对齐justify，填充fill，常规general
+vertical代表垂直方向，可以居中center，还可以靠上top，靠下bottom，两端对齐justify，分散对齐distributed
+另外还有自动换行：wrap_text，这是个布尔类型的参数，这个参数还可以写作wrapText
