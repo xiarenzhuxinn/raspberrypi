@@ -1,0 +1,21 @@
+expect <<-EOS
+        #!/usr/bin/expect
+        set timeout $EXP_TIMEOUT
+        log_file -a -noappend log.${hostname}.log
+        spawn sh
+        expect "$prompt"
+        send -- "$cmd\r"
+        expect "*assword"
+        send -- "$mcasPassword\r"
+        #output is printed on the remote console after the password is sent
+        expect {
+                "*rror*" {
+                puts "\nAn issue was faced\n"
+                exit 1
+                }
+                "$prompt" {
+                exit 0
+                }
+        }
+        expect eof
+EOS

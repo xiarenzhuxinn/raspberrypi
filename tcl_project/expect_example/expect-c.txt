@@ -1,0 +1,15 @@
+expect -c "
+
+spawn scp  root@$ip:$file  /root/
+
+expect {
+
+# \"*assword\" {set timeout 500; send \"$passwd\r\"; }
+
+\"*assword\" {set timeout 500; send \"$passwd\r\"; }
+
+\"yes/no\" { send \"yes\r\"; exp_continue; }
+
+}
+
+expect eof"

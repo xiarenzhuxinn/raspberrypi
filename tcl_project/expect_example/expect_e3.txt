@@ -1,0 +1,74 @@
+#!/usr/bin/expect  
+# Write to multiple users from a prepared file  
+# or a message input interactively  
+  
+if {$argc<2} {  
+send_user "usage: $argv0 file user1 user2 ... "  
+exit  
+}   
+#send_user命令用来显示使用帮助信息到父进程(一般为用户的shell)的标准输出。   
+  
+set nofile 0  
+  
+# get filename via the Tcl lindex function  
+set file [lindex $argv 0]  
+if {$file=="i"} {   
+set nofile 1   
+} else {   
+  
+# make sure message file exists  
+if {[file isfile $file]!=1} {   
+send_user "$argv0: file $file not found. "  
+exit }}   
+  
+####################################################  
+#(1)这部分实现处理脚本启动参数，其必须是一个储存要发送的消息的文件名或表示使用交互输入得到发送消的内容的"i"命令。   
+#(2)变量file被设置为脚本的第一个参数的值，是通过一个Tcl函数lindex来实现的，该函数从列表/数组得到一个特定的元素。[]用来实现将函数lindex的返回值作为set命令的参数。   
+#(3)如果脚本的第一个参数是小写的"i"，那么变量nofile被设置为1，否则通过调用Tcl的函数isfile来验证参数指定的文件存在，如果不存在就报错退出。   
+#(4)可以看到这里使用了if命令来实现逻辑判断功能。该命令后面直接跟判断条件，并且执行在判断条件后的{}内的命令。if条件为false时则运行else后的程序块。   
+#######################################################  
+  
+set procs {}  
+# start write processes  
+  
+for {set i 1} {$i<$argc}  
+{incr i} {  
+spawn -noecho write   
+[lindex $argv $i]   
+lappend procs $spawn_id  
+}   
+#######################################################################################  
+#(1)这一部分使用spawn命令来启动write进程实现向用户发送消息.  
+#(2)这里使用了for命令来实现循环控制功能，循环变量首先设置为1，然后因此递增。循环体是最后的{}的内容。  
+#(3)这里我们是用脚本的第二个和随后的参数来spawn一个write命令，并将每个参数作为发送消息的用户名。  
+#(4)lappend命令使用保存每个spawn的进程的进程ID号的内部变量$spawn_id在变量procs中构造了一个进程ID号列表。  
+###################################################################################################  
+  
+if {$nofile==0} {  
+setmesg [open "$file" "r"]  
+} else {  
+send_user "enter message,  
+ending with ^D: " }   
+#最后脚本根据变量nofile的值实现打开消息文件或者提示用户输入要发送的消息。   
+  
+set timeout -1  
+while 1 {  
+if {$nofile==0} {  
+if {[gets $mesg chars] == -1} break  
+set line "$chars "   
+} else {  
+expect_user {  
+-re " " {}  
+eof break }  
+set line $expect_out(buffer) }  
+  
+foreach spawn_id $procs {   
+send $line }  
+sleep 1}  
+exit   
+########################################################  
+#(1)这段代码说明了实际的消息文本是如何通过无限循环while被发送的。  
+#(2)while循环中的if判断消息是如何得到的。在非交互模式下，下一行内容从消息文件中读出，当文件内容结束时while循环也就结束了。(break命令实现终止循环) 。   
+#(3)在交互模式下，expect_user命令从用户接收消息，当用户输入ctrl+D时结束输入，循环同时结束。 两种情况下变量$line都被用来保存下一行消息内容。当是消息文件时，回车会被附加到消息的尾部。   
+#(4)foreach循环遍历spawn的所有进程，这些进程的ID号都保存在列表变量$procs中，实现分别和各个进程通信。send命令组成了foreach的循环体，发送一行消息到当前的write进程。while循环的最后是一个sleep命令，主要是用于处理非交互模式情况下，以确保消息 不会太快的发送给各个write进程。当while循环退出时，expect脚本结束。   
+########################################################  

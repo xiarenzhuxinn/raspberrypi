@@ -1,0 +1,68 @@
+#!/usr/bin/expect -f
+set timeout 10
+set username dailyck
+set passwd 密码
+set logname /home/padmin/dailyck.log
+match_max 10000
+
+log_user 0
+spawn telnet [lindex $argv 0]
+expect "ogin:"
+sleep .1
+send -- "$username\r"
+expect "assword:"
+sleep .1
+send -- "$passwd\r"
+sleep .1
+
+log_file $logname
+expect        {
+        "\\$"
+                {send -- "export PS1=$\r"}
+        "#"
+                {send -- "export PS1=$\r"}
+        "invalid login name or password"
+                {send_log "\n\n[lindex $argv 0] The password is wrong\n\n"; exit 1}
+        timeout
+                {send_log "\n\n[lindex $argv 0] Timeout\n\n"; exit 2}
+        eof
+                {send_log "\n\n[lindex $argv 0] Connection to host failed: expect_out(buffer)\n\n"; exit 3}
+        }
+expect -exact "\r
+\$"
+sleep .1
+log_user 1
+
+sleep .1
+send -- "ksh <<'!!!'\r"
+send -- "echo \"\\n\"\r"
+send -- "host `hostname`\r"
+send -- "TODAY=`date +\"%m%d\"`\r"
+send -- "YESTERDAY=`TZ=+24 date +\"%m%d\"`\r"
+send -- "errpt | awk '\$2 ~ YESTERDAY\"......\" || \$2 ~ TODAY\"......\"' YESTERDAY=\$YESTERDAY TODAY=\$TODAY | \\\r"
+send -- "grep -v 'T S SYSXDLCI'\r"
+send -- "df | awk 'NR>1, sub(/%/,\"\",\$4){if ( \$4 > 85 ) print \$4\"%\\t\"\$NF}'\r"
+send -- "lspath | grep -v ^Enabled\r"
+#send -- "today=`date | awk '{print \$2\" \"\$3 \" |\"\$2\" 0\"\$3\" \"}'`\r"
+#send -- "yestoday=`TZ=+24 date | awk '{print \$2\" \"\$3\" |\"\$2\" 0\"\$3\" \"}'`\r"
+#send -- "eval last \\| egrep \"'(\$yestoday|\$today)'\" | \\\r"
+#send -- "awk 'BEGIN{OFS=\"\\t\"} NF==9 {sub(/\\/.*/,\"\",\$2); print \$4,\$5,\$3,\$2,\$1}; NF<9 {print}' | sort -r | uniq\r"
+send -- "today=`date +\"%b %d\"`\r"
+send -- "yestoday=`TZ=+24 date +\"%b %d\"`\r"
+send -- "last | awk 'BEGIN {today='\\\"\"\$today\"\\\"'; yestoday='\\\"\"\$yestoday\"\\\"'} \\\r"
+send -- "\$0 !~ today && \$0 !~ yestoday {exit}; NF==9 {sub(/\\/.*/,\"\",\$2); sub(/rsh.*/,\"rsh\",\$2); \\\r"
+send -- "print \$4,\$5,\$3,\$2,\$1}; NF<9 {print}' | sort -r | uniq -c\r"
+send -- "wait\r"
+send -- "echo \"\\n\"\r"
+send -- "!!!\r"
+
+sleep 1
+expect -exact "\r
+\$"
+sleep .1
+log_file
+expect -exact "\r
+\$"
+send -- "exit\r"
+interact
+13:54:04 root@VIOS2:[/home/padmin]#

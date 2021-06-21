@@ -1,0 +1,13 @@
+       log_file [args] [[-a] file]
+             If a filename is provided, log_file will record a transcript of the session (beginning at that point) in the file.  log_file will stop recording if no argument  is  given.
+             Any previous log file is closed.
+
+             Instead of a filename, a Tcl file identifier may be provided by using the -open or -leaveopen flags.  This is similar to the spawn command.  (See spawn for more info.)
+
+             The -a flag forces output to be logged that was suppressed by the log_user command.
+
+             By  default, the log_file command appends to old files rather than truncating them, for the convenience of being able to turn logging off and on multiple times in one ses‐
+             sion.  To truncate files, use the -noappend flag.
+
+             The -info flag causes log_file to return a description of the most recent non-info arguments given.
+

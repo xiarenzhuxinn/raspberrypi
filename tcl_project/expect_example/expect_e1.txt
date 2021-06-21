@@ -1,0 +1,29 @@
+要写到文件，请使用此 Tcl 程序：
+
+proc writeToFile {filename string} {
+    set f [open $filename "w"]
+    puts -nonewline $f $string
+    close $f
+}
+
+# For example, use it like this:
+set toSave "Hello, World!"
+writeToFile "hello.txt" $toSave
+要将其读回，请使用此 Tcl 程序：
+
+proc readFromFile {filename} {
+    set f [open $filename]
+    set data [read $f]
+    close $f
+    return $data
+}
+
+# To continue our example:
+set loadedBack [readFromFile "hello.txt"]
+如果要保存多个变量，请考虑将其放入数组中。然后，您可以保存它这样：
+
+writeToFile "saved_array.data" [array get theArray]
+并加载他们像这样回来：
+
+array set theArray [readFromFile "saved_array.data"]
+对于这类事情，还有很多选择，包括保存可以保存的东西作为脚本，序列化的东西作为JSON，并写的东西到SQLite数据库。source
