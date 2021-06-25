@@ -1,4 +1,5 @@
 #!/bin/bash
+path=$(dirname $(readlink -f "$0"))
 fuc=$1
 file=$2
 lreset(){
@@ -16,7 +17,7 @@ allta=${#target[@]}
 for ((i=0;i<$allta;i++))
 {
 mark=${target[i]#*:}
-grep -w $mark difine &>/dev/null && line=${target[i]%:*} && flg="1" && break
+grep -w $mark $path/difine &>/dev/null && line=${target[i]%:*} && flg="1" && break
 }
 [[ $flg != "1" ]] && continue
 echo $tr
@@ -27,7 +28,7 @@ do
 cat $tr | head -$line | tail -1 | grep "{" &>/dev/null && lkh=$[$lkh + 1] && strline=$[$line+1] && cat $tr | head -$line | tail -1 | grep "}" &>/dev/null && rkh=$[$rkh + 1] && break
 line=$[$line + 1]
 trline=`cat $tr | head -$line | tail -1 | tr -s "/t" " " | awk '{print$1}'`
-[[ $trline != "" ]] && grep -w $trline difine &>/dev/null && cat $tr | head -$intline | tail -1 && sig="1" && break
+[[ $trline != "" ]] && grep -w $trline $path/difine &>/dev/null && cat $tr | head -$intline | tail -1 && sig="1" && break
 done
 [[ $sig = "1" ]] && lreset && continue
 [ $lkh = 0 ] && cat $tr | head -$intline | tail -1 && lreset  && continue
