@@ -1,7 +1,8 @@
 #!/bin/bash
 path=$(dirname $(readlink -f "$0"))
+tpath=`pwd`
 fuc=$1
-file=$2
+file=$tpath/$2
 lreset(){
 flg=""
 sig=""
@@ -9,7 +10,8 @@ lkh="0"
 rkh="0"
 }
 lreset
-trace=`grep -wr $1 $2 | awk -F":" '{print$1}'| sort -u | awk '/\/*.[hc]$/{print$NF}'`
+[ -d $tpath/$2 ] && trace=`grep -wr $1 $tpath/$2 | awk -F":" '{print$1}'| sort -u | awk '/\/*.[hc]$/{print$NF}'`
+[ -f $tpath/$2 ] && trace=$tpath/$2
 for tr in $trace
 do
 target=(`grep -wn $1 $tr | tr -d "\t" | sed "s/ \*/\*/"| awk '{print$1}'`)
@@ -20,9 +22,9 @@ mark=${target[i]#*:}
 grep -w $mark $path/difine &>/dev/null && line=${target[i]%:*} && flg="1" && break
 }
 [[ $flg != "1" ]] && continue
-echo $tr
 intline=$line
-#peline=`grep -A5 $1 $2 | grep -n "{" | awk -F":" '{print$1}' | head -1`
+echo $tr :$intline
+#peline=`grep -A5 $1 $tpath/$2 | grep -n "{" | awk -F":" '{print$1}' | head -1`
 for str in `seq 1 5`
 do
 cat $tr | head -$line | tail -1 | grep "{" &>/dev/null && lkh=$[$lkh + 1] && strline=$[$line+1] && cat $tr | head -$line | tail -1 | grep "}" &>/dev/null && rkh=$[$rkh + 1] && break
@@ -47,6 +49,6 @@ rlline=$[$peline+$lpeline]
 endline=$[$intline+$rlline-1]
 #echo $intline $endline
 cat $tr | head -$endline | tail -$rlline
-#grep -A$rlline $1 $2
+#grep -A$rlline $1 $tpath/$2
 lreset
 done
