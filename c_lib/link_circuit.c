@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define num_node 2
-#define num_circle 3
+#define num_circle 5
 
 typedef struct Node_data
 {
@@ -72,9 +72,9 @@ sum += *(int*)&flgNode->data[i];
 return -sum;
 }
 
-Ndata add_data(char name,int V,int *I)
+Ndata add_data(char name,long V,int *I)
 {
-Ndata data = (Ndata)malloc(sizeof(data));
+Ndata data = (Ndata)malloc(4*(num_circle+1)+1);
 data->name = name;
 data->V = V;
 //data->I[0] = *I;
@@ -82,16 +82,17 @@ int i;
 for (i=0;i<num_circle;i++)
 {
 data->I[i]=*(I+i);
+//printf("ljx_nb %d,%d\r\n",data->I[i],*(I+i));
 }
 return data;
 }
 int main()
 {
-	int a[num_circle]={2,1,5};
+	int a[num_circle]={7,4,3,5,9};
 	Ndata data0=add_data('a',5,a);
 	circuit_Node Node0=createNode(data0);
 //printf("%f\r\n",a[0]);
-printf("%d\r\n",data0->I[1]);
+//printf("%d\r\n",data0->I[2]);
 /*
 	struct Node* Node1=createNode(1);Node0->next = Node1;
 	struct Node* Node2=createNode(2);Node1->next = Node2;
@@ -100,6 +101,8 @@ printf("%d\r\n",data0->I[1]);
 	struct Node* tNode=insNodeahead(Node2,25);
 */
 //printf("I= %d\r\n",KCL(Node0));
-//printallNode(Node0);
+printallNode(Node0);
+//free (data0);
+//free (Node0);
 	return 0;
 }
