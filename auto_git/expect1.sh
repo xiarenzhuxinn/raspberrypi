@@ -16,7 +16,7 @@ set timeout -1
 spawn git push
 expect \"Username for*\"
 send -- \"xiarenzhuxinn\r\"
-expect \"password*\"
+expect \"Password*\"
 send \"Ljxljx19986!7\r\"
 #interact
 expect eof"
