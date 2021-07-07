@@ -17,12 +17,26 @@ typedef struct Node
 	struct Node *next;
 }*circuit_Node,CNode;
 
-
 circuit_Node createNode(Ndata data)
 {
 	circuit_Node CNode = (circuit_Node)malloc(sizeof(CNode));
 	CNode->data = data;
 	CNode->next = NULL;
+	/*
+circuit_Node NNode[num];
+circuit_Node *NNodep = (circuit_Node *)malloc(num*sizeof(CNode));
+NNode[num] = *NNodep;
+
+CNode->next = *NNode;
+
+for (j=0;j<num_circle;j++)
+{
+printf("ljxnb ");
+//circuit_Node *NNode[j] = (circuit_Node)malloc(sizeof(CNode));
+*NNode[j]->data->I[j]=CNode->data->I[j];
+printf("%d \r\n",NNode[j]->data->I[j]);
+}
+*/
 return CNode;
 }
 /*
@@ -31,6 +45,19 @@ int Is_END_node(circuit_Node flgNode)
 	return (flgNode->next == NULL);
 }
 */
+int count_num_circle(circuit_Node flgNode)
+{
+int num=0,i;
+for (i=0;i<num_circle;i++)
+{
+	if (flgNode->data->I[i])
+	{
+  num++;
+  }
+}
+return num;
+}
+
 void printallNode(circuit_Node flgNode)
 {
 	circuit_Node pMove = flgNode;
@@ -43,7 +70,7 @@ void printallNode(circuit_Node flgNode)
 	}
 	printf("%c ",pMove->data->name);
 	printf("%d\r\n",pMove->data->V);
-  pMove=pMove->next;
+	pMove=pMove->next;
   }
 }
 /*
@@ -85,12 +112,13 @@ data->I[i]=*(I+i);
 }
 return data;
 }
+
 int main()
 {
-	int a[num_circle]={7,4,3,5,9};
+	int a[num_circle]={7,4,0,5,9};
 	Ndata data0=add_data('a',5,a);
 	circuit_Node Node0=createNode(data0);
-//printf("%f\r\n",a[0]);
+//	printf("%d\r\n",count_num_circle(Node0));
 //printf("%d\r\n",data0->I[2]);
 /*
 	struct Node* Node1=createNode(1);Node0->next = Node1;
@@ -100,8 +128,8 @@ int main()
 	struct Node* tNode=insNodeahead(Node2,25);
 */
 //printf("I= %d\r\n",KCL(Node0));
-printallNode(Node0);
-//free (data0);
-//free (Node0);
+//printallNode(Node0);
+free (data0);
+free (Node0);
 	return 0;
 }
