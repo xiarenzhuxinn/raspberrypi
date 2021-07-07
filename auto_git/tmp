@@ -1,5 +1,3 @@
-../c_lib/link_circuit.c
-../c_lib/test.o
-commit.sh
 tmp
-../GPIO_rsp.png
+	expect.sh
+	expect1.sh
