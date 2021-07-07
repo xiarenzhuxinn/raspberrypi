@@ -12,4 +12,3 @@ git_pull
 else
 git clone $url && git_pull
 fi
-echo "ljxnb"
