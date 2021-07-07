@@ -10,9 +10,10 @@ do
 	git add $line
 done
 git commit -m "modify"
-git push
+#git push
 expect -c "
 set timeout -1
+spawn git push
 expect \"Username for*\"
 send -- \"xiarenzhuxinn\r\"
 expect \"password*\"
