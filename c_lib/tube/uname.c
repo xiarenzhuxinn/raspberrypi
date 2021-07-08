@@ -32,12 +32,12 @@ int main(int argc, char *argv[])
         else
         {
             printf("the written data is:%s\n",s);
-            exit(EXIT_SUCESS);
+            exit(EXIT_SUCCESS);
         }
     }
     else if (pid > 0)     // 父进程
     {
-        slepp(2);
+        sleep(2);
         printf("now, read from pipe\n");
         if ((read(pipedes[0], d, 14)) == -1)
         {
