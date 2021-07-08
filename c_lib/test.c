@@ -30,9 +30,9 @@ int main()
 //	int y[5]={1,2,3,4,5,6};printf("%d\r\n",*(y+4));//268ti
 //	int a[3][4]={0},b[4]={1};printf("%d,%d\r\n",b[3],a[1][1]);//283ti
 //	int n=5,a[n];printf("%d\r\n",sizeof(a));//285ti
-//	int *p1,*p2,m=5,n;p1=&m;p2=&n;*p1=*p2;printf("%d\r\n",m);338ti
+//	int *p1,*p2,m=5,n=4;p1=&m;p2=&n;*p1=*p2;printf("%d\r\n",m);//338ti
 //	char *s="beijing";char c[]="Beijing";printf("%s,%s\r\n",c,s);//两者等价342题
-//	int aa[8]={0,1,2,3,4,5,6,7};printf("%d,%d,%d\r\n",0[aa],*(0+aa),*(&aa[0]));对应345题
+//	int aa[8]={0,1,2,3,4,5,6,7};printf("%d,%d,%d\r\n",0[aa],*(0+aa),*(&aa[0]));//对应345题
 //	int a,b;scanf("a=%d,b=%d",&a,&b);printf("a=%d,b=%d\r\n",a,b);//397ti
 //	void fun(int a,int b,int c){a=456;b=567;c=678;}{int x=10,y=20,z=30;fun(x,y,z);printf("%d,%d,%d\n",z,y,x);}423ti
 //	int x=2,y=3;printf("%d\r\n",x||y);424ti
@@ -54,7 +54,7 @@ int main()
 //	printf("%d %d\r\n",sizeof(&a),sizeof(&b));
 //	printf("%d %d\r\n",sizeof(a),sizeof(b));
 //	printf("%c %c\r\n",*(a+1),*(b+2));
-	int k,k=2*4,k*4;//	int a=j=1;printf("%d",a);
+//	int k,k=2*4,k*4;//	int a=j=1;printf("%d",a);
 //char a,b;	while(a != 6){printf("%c %c\r\n",a,b);}
 //	printf("%c %c\r\n",a[1],b[1]);
 //	printf("%d %d\r\n",a[1],b[1]);
