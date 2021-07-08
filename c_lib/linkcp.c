@@ -16,19 +16,19 @@ typedef struct Node
 
 Ndata add_data(char name,long V,int* I)
 {
-int i=0,num_circle;
+int i=0,num;
 while(*(I+i))
 {
 i++;
 }
-num_circle=i;
-//printf("%d",num_circle);
-Ndata data = (Ndata)malloc(num_circle*(num_circle+1)+1);
+num=i;
+//printf("%d",num);
+Ndata data = (Ndata)malloc(5*(num+3));
 data->name = name;
 data->V = V;
 //data->I[0] = *I;
 int j;
-for (j=0;j<num_circle;j++)
+for (j=0;j<num;j++)
 {
 data->I[j]=*(I+j);
 //printf("ljx_nb %d,%d\r\n",data->I[i],*(I+i));
@@ -41,22 +41,23 @@ circuit_Node createNode(Ndata data)
 {
 	circuit_Node CNode = (circuit_Node)malloc(sizeof(CNode));
 	CNode->data = data;
-	CNode->next = NULL;
-	/*
+//	CNode->next = NULL;
+	int i=0,j,num;
+	while (data->I[i])
+	{
+	i++;
+	}
+	num=i;
+//	printf("%d ",num);
 circuit_Node NNode[num];
-circuit_Node *NNodep = (circuit_Node *)malloc(num*sizeof(CNode));
-NNode[num] = *NNodep;
-
-CNode->next = *NNode;
-
-for (j=0;j<num_circle;j++)
+circuit_Node *CNNode = (circuit_Node *)malloc(sizeof(CNode));
+for(j=0;j<num;j++)
 {
-printf("ljxnb ");
-//circuit_Node *NNode[j] = (circuit_Node)malloc(sizeof(CNode));
-*NNode[j]->data->I[j]=CNode->data->I[j];
-printf("%d \r\n",NNode[j]->data->I[j]);
+NNode[j]=*(CNNode+j);
 }
-*/
+*NNode = *CNNode;
+CNode->next = *NNode;
+//circuit_Node *NNode[j] = (circuit_Node)malloc(sizeof(CNode));
 return CNode;
 }
 
@@ -69,22 +70,23 @@ int Is_END_node(circuit_Node flgNode)
 void printallNode(circuit_Node flgNode)
 {
 	circuit_Node pMove = flgNode;
-	int j=0,i=0,num;
-	while (flgNode->data->I[i])
+	//printf("%d\r\n",num);
+	while (pMove)
+	{
+	int num=0,j=0,i=0;
+	while (pMove->data->I[i])
 	{
 	i++;
 	}
 	num=i;
-//	printf("%d\r\n",num);
-	while (pMove)
-	{
+//	printf("%d ",num);
 	for (;j<num;j++)
 	{
   printf("%d ",pMove->data->I[j]);
   }
 	printf("%c ",pMove->data->name);
 	printf("%d\r\n",pMove->data->V);
-  pMove=pMove->next;
+	pMove=pMove->next;
   }
 }
 /*
@@ -115,9 +117,13 @@ return -sum;
 
 int main()
 {
-	int a[]={4,2,9,3,5,3};
+	int a[]={5,4,3,3,3,4,1,4,2,0};
 	Ndata data0=add_data('a',5,a);
 	circuit_Node Node0=createNode(data0);
+	int b[]={5,4,1,4,2,0};
+	Ndata data1=add_data('b',3,b);
+	circuit_Node Node1=createNode(data1);
+	Node0->next=Node1;
 //printf("%f\r\n",a[0]);
 //printf("%d\r\n",data0->I[2]);
 /*
@@ -131,5 +137,7 @@ int main()
 printallNode(Node0);
 free (data0);
 free (Node0);
-	return 0;
+free (data1);
+free (Node1);
+return 0;
 }
