@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define num_node 2
-#define num_circle 5
-
 typedef struct Node_data
 {
 char name;
@@ -15,63 +12,82 @@ typedef struct Node
 {
 	Ndata data;
 	struct Node *next;
-}*circuit_Node,CNode;
+}*circuit_Node,cNode;
 
-circuit_Node createNode(Ndata data)
+Ndata add_data(char name,long V,int* I)
 {
-	circuit_Node CNode = (circuit_Node)malloc(sizeof(CNode));
+int i=0,num;
+while(*(I+i))
+{
+i++;
+}
+num=i;
+//printf("%d",num);
+Ndata data = (Ndata)malloc(5*(num+3));
+data->name = name;
+data->V = V;
+//data->I[0] = *I;
+int j;
+for (j=0;j<num;j++)
+{
+data->I[j]=*(I+j);
+//printf("ljx_nb %d,%d\r\n",data->I[i],*(I+i));
+}
+return data;
+}
+
+
+cNode createNode(Ndata data)
+{
+	cNode *CNode = (cNode *)malloc(sizeof(CNode));
 	CNode->data = data;
-	CNode->next = NULL;
-	/*
-circuit_Node NNode[num];
-circuit_Node *NNodep = (circuit_Node *)malloc(num*sizeof(CNode));
-NNode[num] = *NNodep;
-
-CNode->next = *NNode;
-
-for (j=0;j<num_circle;j++)
+//	CNode->next = NULL;
+	int i=0,j,num;
+	while (data->I[i])
+	{
+	i++;
+	}
+	num=i;
+//	printf("%d ",num);
+cNode NNode[num];
+cNode *CNNode = (cNode *)malloc(sizeof(CNode));
+for(j=0;j<num;j++)
 {
-printf("ljxnb ");
+NNode[j]=*(CNNode+j);
+}
+*NNode = *CNNode;
+CNode->next = NNode;
 //circuit_Node *NNode[j] = (circuit_Node)malloc(sizeof(CNode));
-*NNode[j]->data->I[j]=CNode->data->I[j];
-printf("%d \r\n",NNode[j]->data->I[j]);
+return *CNode;
 }
-*/
-return CNode;
-}
+
 /*
 int Is_END_node(circuit_Node flgNode)
 {
 	return (flgNode->next == NULL);
 }
 */
-int count_num_circle(circuit_Node flgNode)
+void printallNode(cNode flgNode)
 {
-int num=0,i;
-for (i=0;i<num_circle;i++)
-{
-	if (flgNode->data->I[i])
+	cNode pMove = flgNode;
+	//printf("%d\r\n",num);
+	//while (pMove.data->name)
+	//{
+	int num=0,j=0,i=0;
+	while (pMove.data->I[i])
 	{
-  num++;
-  }
-}
-return num;
-}
-
-void printallNode(circuit_Node flgNode)
-{
-	circuit_Node pMove = flgNode;
-	int i;
-	while (pMove)
-	{
-	for (i=0;i<num_circle;i++)
-	{
-	printf("%d ",pMove->data->I[i]);
+	i++;
 	}
-	printf("%c ",pMove->data->name);
-	printf("%d\r\n",pMove->data->V);
-	pMove=pMove->next;
+	num=i;
+//	printf("%d ",num);
+	for (;j<num;j++)
+	{
+  printf("%d ",pMove.data->I[j]);
   }
+	printf("%c ",pMove.data->name);
+	printf("%d\r\n",pMove.data->V);
+	//pMove=*pMove.next;
+  //}
 }
 /*
 circuit_Node insNodeahead(circuit_Node flgNode,Ndata data)
@@ -86,7 +102,7 @@ void deletNode(struct Node* flgNode,struct Node* dNode)
 {
 
 }
-*/
+
 int KCL(circuit_Node flgNode)
 {
 int i;
@@ -97,28 +113,24 @@ sum += *(int*)&flgNode->data[i];
 }
 return -sum;
 }
-
-Ndata add_data(char name,long V,int *I)
-{
-Ndata data = (Ndata)malloc(4*(num_circle+1)+1);
-data->name = name;
-data->V = V;
-//data->I[0] = *I;
-int i;
-for (i=0;i<num_circle;i++)
-{
-data->I[i]=*(I+i);
-//printf("ljx_nb %d,%d\r\n",data->I[i],*(I+i));
-}
-return data;
-}
+*/
 
 int main()
 {
-	int a[num_circle]={7,4,0,5,9};
+	int a[]={5,4,3,3,3,4,1,4,2,0};
 	Ndata data0=add_data('a',5,a);
-	circuit_Node Node0=createNode(data0);
-//	printf("%d\r\n",count_num_circle(Node0));
+	cNode Node0=createNode(data0);
+	int b[]={5,4,1,4,2,0};
+	Ndata data1=add_data('b',3,b);
+	cNode Node1=createNode(data1);
+	Node0.next[0]=Node1;
+	
+	int c[]={5,1,4,2,9,3,4,0};
+	Ndata data2=add_data('c',3,c);
+	cNode Node2=createNode(data2);
+	Node0.next[1]=Node2;
+	
+//printf("%f\r\n",a[0]);
 //printf("%d\r\n",data0->I[2]);
 /*
 	struct Node* Node1=createNode(1);Node0->next = Node1;
@@ -128,8 +140,6 @@ int main()
 	struct Node* tNode=insNodeahead(Node2,25);
 */
 //printf("I= %d\r\n",KCL(Node0));
-//printallNode(Node0);
-free (data0);
-free (Node0);
-	return 0;
+printallNode(Node1);
+return 0;
 }
