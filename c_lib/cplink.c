@@ -54,8 +54,8 @@ cNode *CNNode = (cNode *)malloc(sizeof(CNode));
 for(j=0;j<num;j++)
 {
 NNode[j]=*(CNNode+j);
+//CNode->next[j] = NNode[j];
 }
-*NNode = *CNNode;
 CNode->next = NNode;
 //circuit_Node *NNode[j] = (circuit_Node)malloc(sizeof(CNode));
 return *CNode;
@@ -71,8 +71,8 @@ void printallNode(cNode flgNode)
 {
 	cNode pMove = flgNode;
 	//printf("%d\r\n",num);
-	//while (pMove.data->name)
-	//{
+//while (pMove.data->name){
+	pMove=pMove.next[0].next[0];
 	int num=0,j=0,i=0;
 	while (pMove.data->I[i])
 	{
@@ -80,14 +80,13 @@ void printallNode(cNode flgNode)
 	}
 	num=i;
 //	printf("%d ",num);
-	for (;j<num;j++)
+for (;j<num;j++)
 	{
   printf("%d ",pMove.data->I[j]);
   }
-	printf("%c ",pMove.data->name);
+printf("%c ",pMove.data->name);
 	printf("%d\r\n",pMove.data->V);
-	//pMove=*pMove.next;
-  //}
+//	pMove=pMove.next[0];}
 }
 /*
 circuit_Node insNodeahead(circuit_Node flgNode,Ndata data)
@@ -119,16 +118,15 @@ int main()
 {
 	int a[]={5,4,3,3,3,4,1,4,2,0};
 	Ndata data0=add_data('a',5,a);
-	cNode Node0=createNode(data0);
 	int b[]={5,4,1,4,2,0};
 	Ndata data1=add_data('b',3,b);
-	cNode Node1=createNode(data1);
-	Node0.next[0]=Node1;
-	
 	int c[]={5,1,4,2,9,3,4,0};
 	Ndata data2=add_data('c',3,c);
+	cNode Node0=createNode(data0);
+	cNode Node1=createNode(data1);
 	cNode Node2=createNode(data2);
-	Node0.next[1]=Node2;
+	Node0.next[0]=Node1;
+	Node1.next[0]=Node2;
 	
 //printf("%f\r\n",a[0]);
 //printf("%d\r\n",data0->I[2]);
@@ -140,6 +138,6 @@ int main()
 	struct Node* tNode=insNodeahead(Node2,25);
 */
 //printf("I= %d\r\n",KCL(Node0));
-printallNode(Node1);
+printallNode(Node0);
 return 0;
 }
