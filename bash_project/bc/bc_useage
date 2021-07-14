@@ -1,0 +1,45 @@
+bc 命令是任意精度计算器语言，通常在linux下当计算器用。
+它类似基本的计算器, 使用这个计算器可以做基本的数学运算。
+bc支持运算有以下几种:
+
++ - * / % :加,减,乘,除,取余
+a^b : 取a的b方
+&& || < <= > >= == != :条件判断,为真返回1,否则返回0
+bc支持的函数有以下几种:
+
+sqrt(num):获取num的平方根
+length(num):获取num数值的长度,比如length(10)=2
+read:获取输入的数据
+scale:设置小数有效位
+ibase:设置输入进制格式
+obase:设置输出进制格式
+在shell中也经常,通过管道符用到它.
+
+示例1- sqrt使用:
+
+#!/bin/bash
+
+a=1
+b=3
+echo "($a+$b)/2+100" | bc         #打印 102
+c=$(echo "sqrt(100)" | bc )       #c =10
+
+echo "c = $c"
+示例2- length使用:
+
+#!/bin/bash
+
+a=1
+b=3
+c=$(echo "scale=2;($a+$b)/1.5+100" | bc) 
+echo "c = $c"                 # 打印 c = 102.66
+d=$(echo "length($c)" | bc)
+echo "c length is $d"         # c length is 5
+示例3- ibase obase使用
+
+#!/bin/bash
+
+a=255
+b=$(echo "obase=2;ibase=10;$a" | bc)
+echo "b = $b"                       # 打印b = 11111111
+echo "obase=10;ibase=2;$b" | bc     # 打印 255
