@@ -9,12 +9,12 @@ int main()
 {
     sem_t *sem_test;
 
-    sem_test = sem_open("sem_test_01", O_CREAT, 0644, 0); 
+    sem_test = sem_open("sem_test_01", O_CREAT, 0644, 0);
     if(sem_test < 0)
-    {   
+    {
           printf("create sem error errno=%d\n",errno);
           exit(-1);
-    }   
+    }
 
     printf("process TMAC set to waiting……\n");
     printf("This is 1\n");

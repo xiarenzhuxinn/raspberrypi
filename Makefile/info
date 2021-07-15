@@ -1,0 +1,381 @@
+makefile文件用于管理和组织代码工程的编译和链接，其不是可执行文件，其被make工具解析并完成相关动作，下面笔者将介绍makefile中常用的一些语法说明：
+
+ 
+
+1、文件包含：
+
+语法：include 文件名
+
+作用：将其它makefile文件包含进来，组成一个更大的makefile文件，这样有利于makefile模块化编程。通常我们将一些配置选项分开成一个独立的makefile文件，这样有利于makefile文件的管理，或将模块代码的依赖关系和需要编译的文件信息独自写到一个 makefile文件中，最终通过include命令形成一个顶层makefile文件来完成整个工程代码的编译和链接。
+
+ 
+
+2、变量定义：
+
+语法：变量名 := 变量值
+
+在makefile中，经常先定义一个变量，然后往该变量中追加新的值（通过+=符号），比如先定义一个C_SRCS变量（该值可以为空），然后将代码文件test1.c和test2.c添加到C_SRCS中，其代码如下所示：
+
+C_SRCS :=
+
+C_SRCS += test1.c test2.c
+
+ 
+
+在makefile中有一类特殊的变量，其名称为 自动变量，自动变量的值会依据规则中的target 和 prerequisites自动计算其值，自动变量一般以开头$为起始，下面将列出一些常见的自动变量：
+
+       $@ 为规则中的target名称。
+
+ 
+
+       $< 为规则中第一个prerequisite名称
+
+ 
+
+ 
+
+3、内置命令：
+
+Makefile中内置了一些常用的命令，有字符串处理函数subst、patsubst、strip、findstring、filter、filter-out、sort、word、wordlist、words、firstword、lastword；文件名处理函数dir、notdir、suffix、basename、addsuffix、addprefix、join、wildcard、realpath、abspath；条件处理函数if；循环处理函数foreach等。下面介绍一些常用的函数：
+
+wildcard 函数：其语法为$(wildcard pattern)，pattern为匹配的模式，比如$(wildcard %.c) 为查找当前路径下面文件名以.c结尾的文件。
+
+foreach 函数：其语法为$(foreach var,list,text)，每循环一次var从list中按顺序取值一个，然后执行一次text代码并记录结果，最终返回所用text代码运行的结果。比如
+
+dirs := C_DIR S_DIR
+
+file := $(foreach dir,$(dirs),$(wildcard $(dir)/*))
+
+将C_DIR和S_DIR文件夹下面的所有文件添加到file变量中。
+
+ 
+
+dir 函数：其语法为$(dir names…)，用于获取names中文件夹路径，比如
+
+$(dir src/foo.c hacks)
+
+将获得文件夹路径 src/ ./
+
+ 
+
+notdir 函数：其语法为$(notdir names…)，用于获取names中除去路径的信息，比如
+
+$(notdir src/foo.c hacks)
+
+将获得文件信息 foo.c hacks
+
+ 
+
+basename 函数：其语法为$(basename names…)，用于获取names中除去后缀信息，比如
+
+$(basename src/foo.c src-1.0/bar hacks)
+
+将获得信息 src/foo src-1.0/bar hacks
+
+ 
+
+addsuffix 函数：其语法为$(addsuffix suffix,names…)，用于往names中添加后缀信息suffix，比如
+
+$(addsuffix .c,foo bar)
+
+将获得文件信息 foo.c bar.c
+
+ 
+
+addprefix 函数：其语法为$(addprefix prefix,names…)，用于往names中添加前缀信息prefix，比如
+
+$(addprefix src/,foo bar)
+
+将获得信息src/foo src/bar
+
+ 
+
+patsubst 函数：其语法为$(patsubst pattern,replacement,text)，根据 pattern信息将text替换成replacement，比如
+
+objects = foo.o bar.o baz.o
+
+files = $(patsubst %.o,%.c,$( objects))
+
+将获得信息 foo.c bar.c baz.c
+
+其可以简单写成
+
+objects = foo.o bar.o baz.o
+
+files = $(objects:.o=.c)
+
+4、规则定义：
+
+规则是makefile中最重要的概念，其告诉make 目标文件的依赖关系，以及如何生成及更新这些目标文件。在makefile文件规则有2种，一种是显式规则，另一种是隐式规则。
+
+显式规则用于说明 何时及如何重新生成目标，其列出了目标依赖的文件信息，并通过调用命令来创建或更新目标，其语法一般为：
+
+targets : prerequisites
+
+        recipe
+
+        …
+
+targets为要生成或更新的目标，prerequisites为目标依赖的关系，recipe为生成目标的命令，一个规则可以有多条recipe，比如
+
+foo.o : foo.c defs.h
+
+        cc -c -g foo.c
+
+其中foo.o为target，foo.c defs.h 为prerequisites，cc -c -g foo.c为recipe。
+
+ 
+
+隐式规则用于说明 何时及如何来重新生成一类目标文件根据其名称，其描述了目标是如何依赖于名称相似的文件（一般来说除去后缀信息，其目标与依赖文件的名称是一样的），并调用命令来创建或更新目标，比如
+
+%.o : %.c
+
+        $(CC) -c $(CFLAGS) $< -o $@
+
+       这个隐式规则说明了.o的目标文件依赖于同名的.c文件，其中$< 及 $@为自动变量，$<为第一个prerequisites条件，也就是 目标名称.c，$@为目标，也就是 目标名称.o。
+
+在makefile中，我们通常要编写3种隐式规则，第1种为代码链接规则，第2种为源代码编译规则，第3种为汇编代码编译规则。
+
+ 
+
+ 
+
+5、文件搜索路径设置
+
+       Make命令默认会在当前路径中搜索prerequisites中的文件，比如头文件，但我们在写程序时，经常将头文件和源文件隔开放在不同的文件夹下，这种该怎么处理呢？1、我们可以通过VPATH变量来解决，2、我们可以通过vpath指令来解决。
+
+ 
+
+VPATH变量
+
+VPATH变量为所有的prerequisites指定文件路径，路径之间可以通过 :或空格隔开，比如
+
+VPATH = src:../headers
+
+ 
+
+vpath指令
+
+vpath指令的作用与变量VPATH的作用差不多，但vpath有更多的灵活性，其语法为：
+
+vpath pattern directories
+
+       pattern为需要查找的文件匹配模式信息，directories为要查找的文件路径，比如
+
+       vpath %.h ../headers
+
+       其代表在上一层文件夹headers中查找 .h头文件信息。
+
+6、依赖关系生成
+
+       在编写c文件代码时，我们经常通过#include 语句来包含其它文件信息，比如头文件，该c文件被编译时需要依赖于其#include包含进来的文件，在规则编写中，就需要指出这个依赖关系，这样当头文件信息改变后，make程序就知道如何更新目标文件了，而不是整个进行重编译，但这个操作可以看出是非常消耗时间及傻瓜式的，作为解决方案我们可以通过使用 编译器命令 –M选项来自动完成该工作，比如在main.c中#include “defs.h”，通过 cc –M main.c将产生输出 main.o:main.c defs.h，我们可以将输出结果写到 .d文件中，然后通过include指令包含到makefile文件中。
+
+ 
+
+7、编译器常用命令选项
+
+       编译器通常进行预处理、编译、汇编和链接处理，预处理包含了宏定义、文件包含、条件编译，编译则直接将代码翻译成机器码，汇编则将汇编代码翻译成机器码，链接则按照内存地址分配文件将各个文件的机器码统一形成一个可执行文件，对编译命令（比如gcc）而言该如何区别这些操作呢？即通过命令选项。下面将介绍一些常见的命令选项
+
+-o file           输出生成的 file文件
+
+ 
+
+-c          编译或汇编程序文件，但不会执行链接操作
+
+ 
+
+-T script     使用script脚本来分配内存
+
+ 
+
+-W1,option  给链接器发送一个选项，比如生成地址映射表，-Wl,-Map,output.map
+
+ 
+
+-mcpu=name 规定目标处理器的型号
+
+ 
+
+-Wall       使能所有警告调试信息输出
+
+ 
+
+-glevel      要求带调试信息的等级，-g0代表不产生调试信息，-g1代表产生最小的调试信息用来跟踪程序的运行，但不包括本地变量，-g3包含了一些额外的调试信息比如程序的宏定义等。
+
+ 
+
+-I dir       增加头文件的搜索路径，比如 –I../header
+
+ 
+
+-D name    预先定义一个宏定义，比如 –DMPC564xB 表示定义一个宏 MPC564xB
+
+ 
+
+8、makefile举例
+
+       本工程的代码结构如下图所示：
+
+
+
+其中Asm_Files里面放置的是.S汇编文件，bin里面放置的是编译后的elf、S19、.map、.o等文件，include里面放置的为头文件，Linker_Files里面放置的是.ld内存分配文件、make里面放置的是bat脚本和makefile文件，src里面放置的是C代码源文件。
+
+       其中makefile文件内容如下所示：
+
+CC := powerpc-eabivle-gcc-4.9.4.exe
+
+OBJCOPY := powerpc-eabivle-objcopy
+
+ 
+
+TARGET := MCAL_TEST.elf
+
+PROJECT_ROOT := ..
+
+OUT_DIR := $(PROJECT_ROOT)/bin
+
+C_DIRS += ../src
+
+LD_DIRS += ../Linker_Files
+
+S_DIRS += ../Asm_Files
+
+ 
+
+INC_DIR += ../include \
+
+              C:/NXP/S32DS_Power_v2017.R1/S32DS/e200_ewl2/EWL_C/include \
+
+              C:/NXP/S32DS_Power_v2017.R1/S32DS/e200_ewl2/EWL_C/include/pa
+
+ 
+
+C_DEFINE += START_FROM_FLASH MPC564xB TURN_ON_CPU1
+
+ 
+
+C_SRCS += $(foreach DIR,$(C_DIRS),$(wildcard $(DIR)/*.c))
+
+LD_FILE += $(foreach DIR,$(LD_DIRS),$(wildcard $(DIR)/*.ld))
+
+S_SRCS += $(foreach DIR,$(S_DIRS),$(wildcard $(DIR)/*.S))
+
+ 
+
+ALL_SRCS := $(C_SRCS:%.c=%.o)
+
+ALL_SRCS += $(S_SRCS:%.S=%.o)
+
+OBJS  := $(addprefix ../bin/,$(notdir $(ALL_SRCS)))
+
+ 
+
+LD_FLAGS += -Wl,-Map,$(OUT_DIR)/$(TARGET).map \
+
+-Xlinker \
+
+--gc-sections \
+
+-mcpu=e200z2 \
+
+-specs=ewl_c9x_noio.specs \
+
+--sysroot="C:/NXP/S32DS_Power_v2017.R1/S32DS/e200_ewl2"
+
+ 
+
+COMPILE_FLAGS +=-O0 \
+
+-g3 \
+
+-Wall \
+
+-c \
+
+-fmessage-length=0 \
+
+-ffunction-sections \
+
+-fdata-sections \
+
+-mcpu=e200z0 \
+
+-specs=ewl_c9x_noio.specs \
+
+-mbig \
+
+-mvle \
+
+-mregnames \
+
+-mhard-float \
+
+--sysroot="C:/NXP/S32DS_Power_v2017.R1/S32DS/e200_ewl2" \
+
+ 
+
+COMPILE_FLAGS += $(addprefix -D,$(C_DEFINE))
+
+ 
+
+vpath %.c $(C_DIRS)
+
+vpath %.S $(S_DIRS)
+
+ 
+
+$(OUT_DIR)/%.o:%.c
+
+       $(CC) $(COMPILE_FLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c $< -o "$(@)" $(addprefix -I,$(INC_DIR))
+
+ 
+
+$(OUT_DIR)/%.o:%.S
+
+       $(CC) $(COMPILE_FLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c $< -o "$(@)" $(addprefix -I,$(INC_DIR))
+
+ 
+
+.PHONY:all
+
+all:$(OUT_DIR)/$(TARGET) $(OUT_DIR)/$(TARGET).S19
+
+$(OUT_DIR)/$(TARGET): $(OBJS)
+
+       $(CC) -o "$(@)" $(OBJS) $(addprefix -T,$(LD_FILE)) $(LD_FLAGS)
+
+ 
+
+$(OUT_DIR)/$(TARGET).S19:$(OUT_DIR)/$(TARGET)
+
+       $(OBJCOPY) -O srec $(OUT_DIR)/$(TARGET)  $(OUT_DIR)/$(TARGET).S19
+
+ 
+
+.PHONY:clean
+
+clean:
+
+       -$(MAKE_PATH)/rm $(OUT_DIR)/*
+
+ 
+
+bat脚本内容如下所示：
+
+@echo off
+
+::SET Path=%Path%;C:/NXP/S32DS_Power_v2017.R1/Cross_Tools/powerpc-eabivle-4_9/bin
+
+::SET MAKE_PATH=C:/GnuWin32/bin
+
+SET Path=%Path%;C:/NXP/S32DS_Power_v2017.R1/utils/msys32/usr/bin;C:/NXP/S32DS_Power_v2017.R1/Cross_Tools/powerpc-eabivle-4_9/bin
+
+SET MAKE_PATH=C:/NXP/S32DS_Power_v2017.R1/utils/msys32/usr/bin
+
+CALL %MAKE_PATH%/make.exe clean
+
+CALL %MAKE_PATH%/rm.exe build.log
+
+CALL %MAKE_PATH%/make.exe -j %NUMBER_OF_PROCESSORS% all 2>&1 | tee.exe -a build.log
+
+Pause
