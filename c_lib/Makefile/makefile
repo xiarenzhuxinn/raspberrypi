@@ -22,8 +22,8 @@ OBJ=$(SRC:%.c=%.o)
 BIN=$(SRC:%.c=%)
 #ARC=$(wildcard *.o)
 
-
-CC=gcc
+LINK=$(CROSS_COMPILE)ar cr
+CC=$(CROSS_COMPILE)gcc
 CFLAGS=-Wall -lpthread
 target=tar.a
 #target:$(ARC)

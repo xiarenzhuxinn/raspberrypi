@@ -1,0 +1,140 @@
+static lib:
+	ar -cr libhello.a hello.o
+	gcc main.cpp libhello.a -o main.out
+dyaniclib:
+gcc -c -fPIC -o cplick.o cplick.c
+gcc -shared -fPIC -o libcplink.so cplick.o
+gcc -fPIC -shared -o libcplick.so cplick.c
+
+linux下gcc编译生成.out，.o，.a，.so文件
+
+百里杨 2020-03-31 18:31:26  4963  收藏 27
+分类专栏： Linux开发 文章标签： linux
+版权
+
+Linux开发
+专栏收录该内容
+27 篇文章0 订阅
+订阅专栏
+1、文件类型介绍
+.out是可执行文件，相当于win上的exe；
+
+.o是编译中间目标文件，相当于win上的.obj；
+
+.a是静态库，多个.o练链接得到，用于静态链接；
+
+.so是共享库，用于动态链接，相当于win上.dll；
+
+2、out可执行文件生成
+main.cpp
+
+
+#include <stdio.h>
+int main()
+{
+    printf("hello world!\n");
+    return 0;
+}
+编译cpp：
+
+gcc main.cpp -o a.out
+
+执行a.out：
+
+./a.out
+
+结果：
+
+
+
+
+
+3、o目标文件生成
+hello.cpp
+
+#include <stdio.h>
+ 
+void hello()
+{
+    printf("hello!\n");
+}
+生成.o文件：
+
+gcc -c hello.cpp
+
+得到hello.o，由于是中间文件，所以无法执行
+
+
+
+
+4、a静态库生成
+（1）创建静态库
+由.o文件创建静态库，静态库文件名的命名规范是以lib为前缀，紧接着跟静态库名，扩展名为.a。
+
+例如：我们将创建的静态库名为hello，则静态库文件名就是libhello.a。
+
+生成.a文件：
+
+ar -cr libhello.a hello.o
+
+结果：
+
+
+
+
+（2）调用静态库
+main.cpp
+
+#include <stdio.h>
+void hello();
+int main()
+{
+    hello();
+    return 0;
+}
+编译main.cpp，静态链接libhello.a：
+
+gcc main.cpp libhello.a -o main.out
+
+
+
+
+5、so共享库生成
+（1）创建so
+由.o文件创建动态库文件，动态库文件名命名规范和静态库文件名命名规范类似，也是在动态库名增加前缀lib，但其
+
+文件扩展名为.so。
+
+例如：我们将创建的动态库名为hello，则动态库文件名就是libhello.so。
+
+生成so文件：
+
+gcc -shared -fPIC -o libhello.so hello.o
+
+我们执行，发现报错了：
+
+
+
+
+这是因为在生成hello.o时，没有使用-fPIC选项，所以我们使用
+
+gcc -c -fPIC hello.cpp
+
+重新生成一下hello.o，再次执行生成so命令。
+
+
+
+
+（2）调用so
+编译main.cpp：
+
+gcc -o main.out main.cpp -L. -lhello
+
+执行，我们发现报错了：
+
+
+
+
+我们发现报错了，原来是找不到动态库文件libhello.so，程序在运行时，会在/usr/lib和/lib等目录中查找需要的动态库文件。
+
+若找到，则载入动态库，否则将提示类似上述错误而终止程序运行。
