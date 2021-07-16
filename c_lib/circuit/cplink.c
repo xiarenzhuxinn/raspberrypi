@@ -34,7 +34,7 @@ data->I[j]=*(I+j);
 //printf("ljx_nb %d,%d\r\n",data->I[i],*(I+i));
 }
 return data;
-}
+};
 
 
 cNode createNode(Ndata data)
@@ -59,7 +59,7 @@ NNode[j]=*(CNNode+j);
 CNode->next = NNode;
 //circuit_Node *NNode[j] = (circuit_Node)malloc(sizeof(CNode));
 return *CNode;
-}
+};
 
 /*
 int Is_END_node(circuit_Node flgNode)
@@ -87,7 +87,7 @@ for (;j<num;j++)
 printf("%c ",pMove.data->name);
 	printf("%d\r\n",pMove.data->V);
 //	pMove=pMove.next[0];}
-}
+};
 /*
 circuit_Node insNodeahead(circuit_Node flgNode,Ndata data)
 {

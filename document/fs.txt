@@ -1,0 +1,15 @@
+/dev/zero 与 /dev/null
+我们平时在使用dd命令测试磁盘性能时候，时常见到 dd if=/dev/zero或者 dd of=/dev/null这样的写法。这是什么东西呢？
+
+/dev/null
+
+/dev/null看作"黑洞"。 它非常等价于一个只写文件。所有写入它的内容都会永远丢失。 而尝试从它那儿读取内容则什么也读不到。所以我们是不能从他那里读到数据的，所以在dd命令中当我们为了测试某个磁盘的读性能时候，就可以将of指定为/dev/null 这样相当从要测试的设备上读出的数据都填到了这个无底洞中。同时， /dev/null对命令行和脚本都非常的有用的。例如，当我们标准输出中有很多很多的无用信息时候而我们并不需要，这样就可以将输出重定向到/dev/null中：
+
+禁止标准输出.    1 cat $filename >/dev/null
+
+/dev/zero
+
+像/dev/null一样, /dev/zero也是一个伪文件。 他产生连续不断的null的流（二进制的零流，而不是ASCII型的）。写入它的输出会丢失不见， 而从/dev/zero读出一连串的null也比较困难， 虽然这也能通过od或一个十六进制编辑器来做到。 /dev/zero主要的用处是用来创建一个指定长度用于初始化的空文件，就像临时交换文件。另一个应用是为特定的目的而用零去填充一个指定大小的文件，就像我们在用dd命令为了测试磁盘写性能时候，我们可以将if指定为/dev/zero这样，他就相当源源不断的向我们要测试的设备中写入数据。
+
+/dev/random与/dev/unrandom
+dev/random和/dev/urandom是unix系统提供的产生随机数的设备，很多应用都需要使用random设备提供的随机数，比如ssh keys, SSL keys, TCP/IP sequence numbers等等。他们的区别在于，/dev/urandom生成的速度比/dev/random快。如果不能立即生成随机串，/dev/random会一直阻塞，有时会非常耗费CPU；/dev/urandom则会根据其他值立即生成一个随机串，不会阻塞。/dev/urandom生成的随机值没有/dev/random随机。大多数情况下，我们选用/dev/urandom
