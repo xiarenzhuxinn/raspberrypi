@@ -17,7 +17,7 @@ int main (void)
     tmp = localtime (&tout.tv_sec); 
     strftime (buf, sizeof (buf), "%r", tmp);
     printf ("current time is %s\n", buf);
-    tout.tv_sec += 10;
+    tout.tv_sec += 3;
     err = pthread_mutex_timedlock (&lock, &tout);
     clock_gettime (CLOCK_REALTIME, &tout);
     tmp = localtime (&tout.tv_sec);
