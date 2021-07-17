@@ -1,0 +1,27 @@
+#!/bin/bash
+
+user=`whoami`
+cpath="/home/ljx/raspberrypi/c_lib"
+bpath="/home/ljx/raspberrypi/bash_project"
+ppath="/home/ljx/raspberrypi/python_project"
+epath="/home/ljx/raspberrypi/tcl_project"
+tpath=$1
+dpath="/home/hi"
+[ "$tpath" = "" ] && fpath=$dpath
+[ "$tpath" != "" ] && path=\$$tpath"path" && eval fpath="$path"
+echo $fpath
+suroot(){
+expect -c "
+set timeout -1
+spawn sudo su root
+expect \"*assword\"
+send -- \"123456\r\"
+#output is printed on the remote console after the password is sent
+expect \"*#\"
+send -- \"cd $fpath\r\"
+expect \"*#\"
+send -- \"source /home/hi/.bashrc\r\"
+interact
+#expect eof"
+}
+[ $user != "root" ] && suroot
