@@ -1,0 +1,43 @@
+$(subst from,to,text)
+函数名称：字符串替换函数— subst。
+函数功能：把字串“ text”中的“ from”字符替换为“ to”。
+返回值：替换后的新字符串。
+示例：$(subst ee,EE,feet on the street)替换“ feet on the street”中的“ ee”为“ EE”，结果得到字符串“ fEEt on the strEEt”。
+$(patsubst pattern,replacement,text)
+函数名称：模式替换函数— patsubst。
+函数功能：搜索“ text”中以空格分开的单词，将否符合模式“ pattern”替换为“ REPLACEMENT”。参数“ PATTERN”中可以使用模式通配符“ %”来代表一个单词中的若干字符。如果参数“ replacement”中也包含一个“ %”，那么“ REPLACEMENT”中的“ %”将是“ pattern”中的那个“ %”所代表的字符串。在“ pattern”和“ replacement”中，只有第一个“ %”被作为模式字符来处理，之后出现的不再作模式字符（作为一个字符）。在参数中如果需要将第一个出现的“ %”作为字符本身而不作为模式字符时，可使用反斜杠“ \”进行转义处理。
+返回值：替换后的新字符串。
+函数说明：参数“ text”单词之间的多个空格在处理时被合并为一个空格，并忽略前导和结尾空格。
+示例：
+$(patsubst %.c,%.o,x.c.c bar.c)
+把字串“ x.c.c bar.c”中以.c 结尾的单词替换成以.o 结尾的字符。函数的返回结果
+是“ x.c.o bar.o”
+变量替换引用中$(var:pattern=replacement)等于$(patsubst pattern,replacement,$(var))；而另外一种更为简单的替换字符后缀的实现：$(var:suffix=replacement)等于$(patsubst %suffix,%replacement,$(var))；例如我们存在一个代表所有.o 文件的变量
+objects = foo.o bar.o baz.o ，为了得到这些.o 文件所对应的.c 源文件。我们可以使用以下两种方式的任意一个：
+$(objects:.o=.c)
+$(patsubst %.o,%.c,$(objects))
+ 
+$(filter pattern...,text)
+函数名称：过滤函数— filter。
+函数功能：过滤掉字串“ text”中所有不符合模式“ pattern”的单词，保留所有符合此模式的单词。可以使用多个模式。模式中一般需要包含模式字符“ %”。存在多个模式时，模式表达式之间使用空格分割。
+返回值：空格分割的“ text”字串中所有符合模式“ pattern”的字串。
+函数说明：“ filter”函数可以用来去除一个变量中的某些字符串，我们下边的例子中就是用到了此函数。
+示例：
+sources := foo.c bar.c baz.s ugh.h
+foo: $(sources)
+cc $(filter %.c %.s,$(sources)) -o foo
+使用“ $(filter %.c %.s,$(sources))”的返回值给 cc 来编译生成目标“ foo”，函数返回
+值为“ foo.c bar.c baz.s”
+
+$(filter-out PATTERN…,TEXT) `
+
+函数名称 ：反过滤函数—filter-out。
+函数功能 ：和“filter”函数实现的功能相反。过滤掉字串“TEXT”中所有符合模式“PATTERN”的单词，保留所有不符合此模式的单词。可以有多个模式。存在多个模式时，模式表达式之间使用空格分割。
+返回值 ：空格分割的“TEXT”字串中所有不符合模式“PATTERN”的字串。
+函数说明： “filter-out”函数也可以用来去除一个变量中的某些字符串（实现和“filter”函数相反）。
+示例
+objects=main1.o foo.o main2.o bar.o 
+mains=main1.o main2.o 
+
+$(filter-out $(mains),$(objects)) 
+实现了去除变量“objects”中“mains”定义的字串（文件名）功能。它的返回值为“foo.o bar.o”。
