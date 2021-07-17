@@ -1,3 +1,0 @@
-#!/bin/bash
-ppath=$(dirname $(readlink -f "$0"))
-cd $ppath/../c_lib
