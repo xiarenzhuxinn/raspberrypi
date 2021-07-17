@@ -1,3 +1,4 @@
+https://seisman.github.io/how-to-write-makefile/functions.html#
 makefile文件用于管理和组织代码工程的编译和链接，其不是可执行文件，其被make工具解析并完成相关动作，下面笔者将介绍makefile中常用的一些语法说明：
 1、文件包含：
 语法：include 文件名
